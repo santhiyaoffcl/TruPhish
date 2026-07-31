@@ -1,123 +1,154 @@
+# 🛡️ TruPhish
 
-<div align="center">
-  <h1>🛡️ TruPhish</h1>
-  <p><strong>Advanced AI-Powered Phishing Domain Detection System</strong></p>
-  <p>🚀 <strong><a href="https://truphish.vercel.app/" target="_blank">Live Demo</a></strong></p>
+### **Advanced AI-Powered Phishing Detection & Threat Intelligence Platform**
 
-  <p>
-    <img src="https://img.shields.io/badge/React-20232A?style=for-the-badge&logo=react&logoColor=61DAFB" alt="React" />
-    <img src="https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" />
-    <img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" />
-    <img src="https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" />
-  </p>
-</div>
+[![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel&logoColor=white)](https://truphish.vercel.app/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-v18+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 
-<hr />
+**TruPhish** is a modern, enterprise-ready full-stack application designed to proactively detect, analyze, and mitigate malicious phishing threats. By pairing a responsive and stunning React 19 single-page application with a high-throughput Express.js backend and a dedicated Python FastAPI machine learning service, TruPhish delivers real-time risk assessment for URLs, emails, and SMS messages.
 
-## 🌟 Overview
+---
 
-**TruPhish** is a modern, full-stack application designed to proactively detect, analyze, and prevent users from falling victim to malicious phishing URLs. By combining a blazing-fast React frontend, a robust Express.js backend, and a dedicated Python machine learning classification service, TruPhish delivers real-time risk assessment for any given domain.
+## 🚀 Live Demo
+
+Experience the live application hosted on Vercel:  
+👉 **[https://truphish.vercel.app/](https://truphish.vercel.app/)**
+
+---
 
 ## ✨ Key Features
 
-- **🔍 Real-Time URL Scanning**: Instantaneously evaluates URLs against a trained machine learning model.
-- **📊 Comprehensive Risk Meter**: Visualize the threat level of domains through an intuitive, color-coded dashboard.
-- **🔒 Secure Authentication**: Robust JWT-based user session handling and password encryption.
-- **⚡ Microservices Architecture**: Decoupled Python ML engine (`FastAPI`) and Node core API for optimal scalability.
-- **💅 Premium UI/UX**: Built with React and Recharts, offering responsive, interactive analytic visualizations.
+- **🔍 Agentic URL Threat Scanner**: Sequentially resolves DNS, validates SSL/TLS certificate chains, analyzes brand impersonation, and runs URL path heuristic checks.
+- **✉️ Text-Based Social Engineering Classifier**: Evaluates email and SMS body text to identify phishing vocabulary, urgency level, and credential requests.
+- **💬 Secure AI Threat Analyst**: Integrates Gemini & Groq APIs to provide a context-aware security assistant that reviews scans, suggests countermeasures, and explains security implications.
+- **📊 Real-time Analytical Visualizations**: Interactive threat-meter gauge, dynamic logs, and custom-styled responsive dashboard widgets.
+- **🔒 JWT & Bcrypt Authentication**: End-to-end user identity protection with password hashing and session tracking.
+- **🎨 Glassmorphism & LiquidEther UI**: Eye-catching dark/light visual style with modern fluid typography and premium animations.
 
 ---
 
 ## 🛠️ Tech Stack
 
-### Frontend
-- **React 19** powered by **Vite** for lightning-fast compilation.
-- **Recharts** for rich data visualization.
-- **Lucide React** for crisp, scalable iconography.
-- **React Router** for seamless navigation.
+### **Frontend**
+* **React 19** & **Vite** for lightning-fast bundling.
+* **LiquidEther WebGL** for custom fluid backdrops.
+* **Recharts** for elegant data representation.
+* **Lucide React** for clean, vector-based iconography.
+* **React Router Dom** for client-side routing.
 
-### Backend (Core API)
-- **Node.js & Express.js** for handling business logic and routing.
-- **MongoDB** as the database (via **Mongoose**).
-- **JSON Web Tokens (JWT) & bcryptjs** for secure auth and user management.
+### **Backend (Core API)**
+* **Node.js** & **Express.js** as the router and orchestrator.
+* **MongoDB & Mongoose** for session persistence, history tracking, and user management.
+* **JWT (JSON Web Tokens)** & **Bcrypt.js** for securing API endpoints.
 
-### Machine Learning Service
-- **Python / FastAPI** serving predictions and advanced URL analytics at high throughput.
-- **Uvicorn** ASGI server.
+### **ML & Threat Intel Service**
+* **Python 3.10+** & **FastAPI** to execute high-performance analytical workers.
+* **Uvicorn** ASGI server.
+* **Socket / SSL / Whois Heuristics** for analyzing connection security and DNS states.
 
 ---
 
-## 📂 Project Structure
+## 📂 Project Architecture
 
-```text
-TruPhish/
-├── backend/          # Node/Express API (Auth, DB connectors, Route Handlers)
-├── frontend/         # React Application (Views, Components, Dashboard)
-├── ml-service/       # Python FastAPI Service (URL analysis & ML Inference)
-└── run_all.ps1       # One-click startup script for Windows users
+```mermaid
+graph TD
+    A[React Client] <-->|HTTP / JWT| B[Express Core API]
+    B <-->|Mongoose| C[(MongoDB Atlas)]
+    B <-->|Inference Requests| D[Python FastAPI ML Service]
+    D -->|DNS Lookup| E[Internet / DNS Servers]
+    D -->|SSL Certificate Verification| F[Domain Handshake]
+    B <-->|Conversations| G[LLM Orchestrator: Gemini / Groq]
 ```
+
+---
+
+## ⚙️ Environment Variables
+
+Before launching the project, configure the following environment parameters:
+
+### **Backend (`/backend/.env`)**
+```env
+PORT=5000
+MONGODB_URI=your_mongodb_connection_string
+JWT_SECRET=your_jwt_signing_key
+ML_API_URL=http://127.0.0.1:8000
+GEMINI_API_KEY=your_gemini_api_key
+GROQ_API_KEY=your_groq_api_key
+```
+
 ---
 
 ## 🚀 Getting Started
 
 ### Prerequisites
+* **Node.js** (v18.0.0+)
+* **Python** (v3.10+)
+* **MongoDB** (Local instance or MongoDB Atlas cluster)
 
-Before you begin, ensure you have the following installed:
-- [Node.js](https://nodejs.org/) (v18 or higher)
-- [Python](https://www.python.org/) (3.10 or higher)
-- [MongoDB](https://www.mongodb.com/) (Local or Atlas)
+---
 
-### 🛠️ One-Click Installation (Windows)
+### ⚡ One-Click Startup (Windows)
 
-We provide a synchronized PowerShell script that sets up virtual environments, installs dependencies, and boots all three servers simultaneously!
+We provide a pre-configured PowerShell script that installs all dependencies, sets up the Python virtual environment (`venv`), and spawns all services simultaneously:
 
-1. Clone the repository:
+1. Clone the project:
    ```bash
    git clone https://github.com/santhiyaoffcl/TruPhish.git
    cd TruPhish
    ```
-
-2. Run the master startup script:
+2. Run the startup script:
    ```powershell
    .\run_all.ps1
    ```
 
-*(The script will open three separate terminals running the ML Service on port 8000, Node API on port 5000, and Vite Frontend).*
+---
 
 ### 📦 Manual Setup
 
-If you prefer to start services manually or are on Mac/Linux:
+If you are on Linux/macOS or prefer manually booting each service:
 
-**1. ML Service**
+#### 1. Start the FastAPI ML Service
 ```bash
 cd ml-service
 python -m venv venv
-source venv/bin/activate  # Or .\venv\Scripts\Activate.ps1 on Windows
+source venv/bin/activate  # On Windows use: .\venv\Scripts\Activate.ps1
 pip install -r requirements.txt
-uvicorn app:app --reload --port 8000
+python app.py
 ```
+*The service will start listening on `http://localhost:8000`.*
 
-**2. Backend API**
+#### 2. Start the Express Backend API
 ```bash
 cd backend
 npm install
 npm run dev
 ```
+*The API will start listening on `http://localhost:5000`.*
 
-**3. Frontend Dev Server**
+#### 3. Start the React Frontend Console
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
+*The local development server will start on `http://localhost:5173`.*
 
 ---
 
 ## 🛡️ Security & Privacy
-TruPhish securely hashes all user credentials via `bcryptjs`. We do not log scanned URLs to persistent public databases, ensuring corporate privacy is maintained while investigating potential threats.
+TruPhish prioritizes privacy. No raw scanned URLs or text values are logged to public search interfaces, and all user credentials undergo one-way cryptographic hashing before database storage.
 
 ## 🤝 Contributing
-Contributions, issues, and feature requests are welcome! Feel free to check the [issues page](https://github.com/santhiyaoffcl/TruPhish/issues).
+Contributions are what make the open source community such an amazing place to learn, inspire, and create. Any contributions you make are **greatly appreciated**.
+
+1. Fork the Project
+2. Create your Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Commit your Changes (`git commit -m 'Add some AmazingFeature'`)
+4. Push to the Branch (`git push origin feature/AmazingFeature`)
+5. Open a Pull Request
 
 ## 📝 License
-This project is licensed under the **ISC License**.
+Distributed under the **ISC License**. See the `LICENSE` files for more details.
