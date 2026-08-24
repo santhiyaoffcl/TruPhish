@@ -1,15 +1,12 @@
-<div align="center">
-  <h1>🛡️ TruPhish</h1>
-  <p><strong>Advanced AI-Powered Phishing Detection & Threat Intelligence Platform</strong></p>
+# 🛡️ TruPhish
 
-  <p>
-    <a href="https://truphish.vercel.app/" target="_blank"><img src="https://img.shields.io/badge/Demo-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel&logoColor=white" alt="Live Demo" /></a>
-    <a href="https://react.dev/" target="_blank"><img src="https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black" alt="React" /></a>
-    <a href="https://nodejs.org/" target="_blank"><img src="https://img.shields.io/badge/Node.js-v18+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white" alt="Node.js" /></a>
-    <a href="https://fastapi.tiangolo.com/" target="_blank"><img src="https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white" alt="FastAPI" /></a>
-    <a href="https://www.mongodb.com/" target="_blank"><img src="https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white" alt="MongoDB" /></a>
-  </p>
-</div>
+### **Advanced AI-Powered Phishing Detection & Threat Intelligence Platform**
+
+[![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel&logoColor=white)](https://truphish.vercel.app/)
+[![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-v18+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 
 **TruPhish** is a modern, enterprise-ready full-stack application designed to proactively detect, analyze, and mitigate malicious phishing threats. By pairing a responsive and stunning React 19 single-page application with a high-throughput Express.js backend and a dedicated Python FastAPI machine learning service, TruPhish delivers real-time risk assessment for URLs, emails, and SMS messages.
 
