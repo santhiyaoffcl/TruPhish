@@ -1,7 +1,4 @@
 # run_all.ps1
-Write-Host "🚀 Starting ML Service (Port 8000)..." -ForegroundColor Cyan
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd d:\TruPhish\ml-service; if (!(Test-Path venv)) { python -m venv venv }; .\venv\Scripts\Activate.ps1; python -m pip install -r requirements.txt; python app.py"
-
 Write-Host "🟢 Starting Node Backend (Port 5000)..." -ForegroundColor Green
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd d:\TruPhish\backend; npm run dev"
 

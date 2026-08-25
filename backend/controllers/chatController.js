@@ -1,4 +1,5 @@
 const axios = require('axios');
+const { PhishingAgent } = require('../services/phishingAgent');
 
 // Help regular expressions
 const URL_REGEX = /(https?:\/\/[^\s]+)/gi;
@@ -24,17 +25,15 @@ exports.handleChat = async (req, res) => {
 
         if (agenticDeepSweep && targetToScan) {
             try {
-                const mlUrl = process.env.ML_API_URL || 'http://127.0.0.1:8000';
                 let scanPayload = targetToScan;
                 if (!scanPayload.startsWith('http://') && !scanPayload.startsWith('https://')) {
                     scanPayload = 'http://' + scanPayload;
                 }
 
-                // Execute scanner tool
-                const scanRes = await axios.post(`${mlUrl}/scan/url`, { url: scanPayload }, { timeout: 4000 });
-                scanResult = scanRes.data;
+                const agent = new PhishingAgent();
+                scanResult = await agent.scanUrl(scanPayload);
                 scanLogs = scanResult.logs || [];
-                
+
                 agentContext = `[Agentic Security Tool Output]
 Target URL: ${scanPayload}
 Calculated Risk: ${scanResult.risk_score}/100 Severity
@@ -43,9 +42,9 @@ Key Findings:
 ${scanResult.explanations.map(exp => `- ${exp}`).join('\n')}
 --------------------------------------------------`;
             } catch (err) {
-                console.error('FastAPI scanner tool failed:', err.message);
+                console.error('Scanner tool failed:', err.message);
                 agentContext = `[Agentic Security Tool Output]
-Attempted domain scan for "${targetToScan}" but local ML Service (port 8000) was unreachable.
+Attempted domain scan for "${targetToScan}" but the Express scan engine failed.
 --------------------------------------------------`;
             }
         }

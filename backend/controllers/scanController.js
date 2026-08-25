@@ -1,5 +1,5 @@
 const ScanHistory = require('../models/scanHistory');
-const axios = require('axios');
+const { PhishingAgent } = require('../services/phishingAgent');
 
 exports.scanUrl = async (req, res) => {
     const { url } = req.body;
@@ -25,28 +25,22 @@ async function processScan(userId, input, type, res) {
     };
 
     try {
-        // Call ML Service with timeout (3s = 3000ms)
-        const endpoint = type === 'url' ? '/scan/url' : '/scan/text';
-        const payload = type === 'url' ? { url: input } : { text: input };
-        
-        const response = await axios.post(`${process.env.ML_API_URL}${endpoint}`, payload, {
-            timeout: 3000
-        });
+        const agent = new PhishingAgent();
+        const data = type === 'url' ? await agent.scanUrl(input) : await agent.scanText(input);
 
-        if (response.data) {
-            scanResult.risk_score = response.data.risk_score;
-            scanResult.prediction = response.data.prediction;
-            scanResult.explanations = response.data.explanations || [];
+        if (data) {
+            scanResult.risk_score = data.risk_score;
+            scanResult.prediction = data.prediction;
+            scanResult.explanations = data.explanations || [];
             scanResult.status = 'success';
         }
     } catch (error) {
-        console.error('ML Service Error:', error.message);
+        console.error('Scan engine error:', error.message);
     }
 
     const latency_ms = Date.now() - startTime;
 
     try {
-        // Save to MongoDB
         const scan = new ScanHistory({
             user_id: userId,
             input,
@@ -84,7 +78,6 @@ exports.getHistory = async (req, res) => {
         const offset = (page - 1) * limit;
         const search = req.query.search || '';
 
-        // Case-insensitive search on input
         const filter = {
             user_id: req.user.id,
             input: { $regex: search, $options: 'i' }
@@ -126,14 +119,14 @@ exports.getHistory = async (req, res) => {
 };
 
 exports.clearHistory = async (req, res) => {
-  try {
-    const userId = req.user.id;
-    await ScanHistory.deleteMany({ user_id: userId });
-    res.json({ message: 'Scan history successfully cleared', success: true });
-  } catch (error) {
-    console.error("Clear history error:", error);
-    res.status(500).json({ message: "Server error clearing history" });
-  }
+    try {
+        const userId = req.user.id;
+        await ScanHistory.deleteMany({ user_id: userId });
+        res.json({ message: 'Scan history successfully cleared', success: true });
+    } catch (error) {
+        console.error('Clear history error:', error);
+        res.status(500).json({ message: 'Server error clearing history' });
+    }
 };
 
 async function processStream(req, res, input, type) {
@@ -141,74 +134,54 @@ async function processStream(req, res, input, type) {
     res.setHeader('Content-Type', 'text/event-stream');
     res.setHeader('Cache-Control', 'no-cache');
     res.setHeader('Connection', 'keep-alive');
-    res.flushHeaders();
-    
+    if (typeof res.flushHeaders === 'function') {
+        res.flushHeaders();
+    }
+
     try {
-        const endpoint = type === 'url' ? '/scan/url/stream' : '/scan/text/stream';
-        const queryParam = type === 'url' ? 'url' : 'text';
-        
-        const response = await axios({
-            method: 'get',
-            url: `${process.env.ML_API_URL}${endpoint}?${queryParam}=${encodeURIComponent(input)}`,
-            responseType: 'stream',
-            timeout: 10000
-        });
+        const agent = new PhishingAgent();
+        const stream = type === 'url'
+            ? agent.scanUrlStream(input, { delayed: true })
+            : agent.scanTextStream(input, { delayed: true });
 
-        let responseBuffer = '';
-        response.data.on('data', (chunk) => {
-            responseBuffer += chunk.toString();
-            res.write(chunk);
-        });
-
-        response.data.on('end', async () => {
-            try {
-                const lines = responseBuffer.split('\n');
-                let finalResult = null;
-                for (const line of lines) {
-                    if (line.startsWith('data: ')) {
-                        const rawJson = line.substring(6).trim();
-                        try {
-                            const parsed = JSON.parse(rawJson);
-                            if (parsed.step === 'complete') {
-                                finalResult = parsed.data;
-                                break;
-                            }
-                        } catch (e) {
-                            // Ignored
-                        }
-                    }
-                }
-
-                if (finalResult) {
-                    const latency_ms = Date.now() - startTime;
-                    const scan = new ScanHistory({
-                        user_id: req.user.id,
-                        input,
-                        type,
-                        risk_score: finalResult.risk_score,
-                        prediction: finalResult.prediction,
-                        explanations: finalResult.explanations || [],
-                        source: 'web',
-                        status: 'success',
-                        latency_ms
-                    });
-                    await scan.save();
-                }
-            } catch (dbError) {
-                console.error('Database insertion error for stream:', dbError);
-            } finally {
-                res.end();
+        let finalResult = null;
+        for await (const event of stream) {
+            res.write(`data: ${JSON.stringify(event)}\n\n`);
+            if (event.step === 'complete') {
+                finalResult = event.data;
             }
-        });
+        }
 
-        response.data.on('error', (err) => {
-            console.error('Response data error in SSE stream:', err);
-            res.end();
-        });
-
+        if (finalResult) {
+            const latency_ms = Date.now() - startTime;
+            const scan = new ScanHistory({
+                user_id: req.user.id,
+                input,
+                type,
+                risk_score: finalResult.risk_score,
+                prediction: finalResult.prediction,
+                explanations: finalResult.explanations || [],
+                source: 'web',
+                status: 'success',
+                latency_ms
+            });
+            await scan.save();
+        }
     } catch (error) {
-        console.error('ML Streaming Error:', error.message);
-        res.write(`data: ${JSON.stringify({ step: 'complete', status: 'danger', message: 'Failed to establish agent thread stream.', data: { risk_score: 50, prediction: 'unknown', explanations: ['ML Stream API connectivity failure.'], report: 'Analysis interrupted.', logs: [] } })}\n\n`);
+        console.error('Scan streaming error:', error.message);
+        res.write(`data: ${JSON.stringify({
+            step: 'complete',
+            status: 'danger',
+            message: 'Failed to complete agent thread stream.',
+            data: {
+                risk_score: 50,
+                prediction: 'unknown',
+                explanations: ['Scan engine error.'],
+                report: 'Analysis interrupted.',
+                logs: []
+            }
+        })}\n\n`);
+    } finally {
         res.end();
     }
 }

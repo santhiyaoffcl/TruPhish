@@ -5,10 +5,10 @@
 [![Live Demo](https://img.shields.io/badge/Demo-Live%20on%20Vercel-success?style=for-the-badge&logo=vercel&logoColor=white)](https://truphish.vercel.app/)
 [![React](https://img.shields.io/badge/React-19-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev/)
 [![Node.js](https://img.shields.io/badge/Node.js-v18+-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
-[![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com/)
+[![Express](https://img.shields.io/badge/Express-000000?style=for-the-badge&logo=express&logoColor=white)](https://expressjs.com/)
 [![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248?style=for-the-badge&logo=mongodb&logoColor=white)](https://www.mongodb.com/)
 
-**TruPhish** is a modern, enterprise-ready full-stack application designed to proactively detect, analyze, and mitigate malicious phishing threats. By pairing a responsive and stunning React 19 single-page application with a high-throughput Express.js backend and a dedicated Python FastAPI machine learning service, TruPhish delivers real-time risk assessment for URLs, emails, and SMS messages.
+**TruPhish** is a modern, enterprise-ready full-stack application designed to proactively detect, analyze, and mitigate malicious phishing threats. By pairing a responsive React 19 single-page application with a high-throughput Express.js backend, TruPhish delivers real-time risk assessment for URLs, emails, and SMS messages.
 
 ---
 
@@ -40,14 +40,10 @@ Experience the live application hosted on Vercel:
 * **React Router Dom** for client-side routing.
 
 ### **Backend (Core API)**
-* **Node.js** & **Express.js** as the router and orchestrator.
+* **Node.js** & **Express.js** as the router, scan engine, and orchestrator.
 * **MongoDB & Mongoose** for session persistence, history tracking, and user management.
 * **JWT (JSON Web Tokens)** & **Bcrypt.js** for securing API endpoints.
-
-### **ML & Threat Intel Service**
-* **Python 3.10+** & **FastAPI** to execute high-performance analytical workers.
-* **Uvicorn** ASGI server.
-* **Socket / SSL / Whois Heuristics** for analyzing connection security and DNS states.
+* **DNS / TLS heuristics** for analyzing connection security and domain impersonation.
 
 ---
 
@@ -57,9 +53,8 @@ Experience the live application hosted on Vercel:
 graph TD
     A[React Client] <-->|HTTP / JWT| B[Express Core API]
     B <-->|Mongoose| C[(MongoDB Atlas)]
-    B <-->|Inference Requests| D[Python FastAPI ML Service]
-    D -->|DNS Lookup| E[Internet / DNS Servers]
-    D -->|SSL Certificate Verification| F[Domain Handshake]
+    B -->|DNS Lookup| E[Internet / DNS Servers]
+    B -->|SSL Certificate Verification| F[Domain Handshake]
     B <-->|Conversations| G[LLM Orchestrator: Gemini / Groq]
 ```
 
@@ -74,7 +69,6 @@ Before launching the project, configure the following environment parameters:
 PORT=5000
 MONGODB_URI=your_mongodb_connection_string
 JWT_SECRET=your_jwt_signing_key
-ML_API_URL=http://127.0.0.1:8000
 GEMINI_API_KEY=your_gemini_api_key
 GROQ_API_KEY=your_groq_api_key
 ```
@@ -85,14 +79,13 @@ GROQ_API_KEY=your_groq_api_key
 
 ### Prerequisites
 * **Node.js** (v18.0.0+)
-* **Python** (v3.10+)
 * **MongoDB** (Local instance or MongoDB Atlas cluster)
 
 ---
 
 ### ⚡ One-Click Startup (Windows)
 
-We provide a pre-configured PowerShell script that installs all dependencies, sets up the Python virtual environment (`venv`), and spawns all services simultaneously:
+We provide a pre-configured PowerShell script that installs all dependencies and spawns the backend and frontend simultaneously:
 
 1. Clone the project:
    ```bash
@@ -110,17 +103,7 @@ We provide a pre-configured PowerShell script that installs all dependencies, se
 
 If you are on Linux/macOS or prefer manually booting each service:
 
-#### 1. Start the FastAPI ML Service
-```bash
-cd ml-service
-python -m venv venv
-source venv/bin/activate  # On Windows use: .\venv\Scripts\Activate.ps1
-pip install -r requirements.txt
-python app.py
-```
-*The service will start listening on `http://localhost:8000`.*
-
-#### 2. Start the Express Backend API
+#### 1. Start the Express Backend API
 ```bash
 cd backend
 npm install
@@ -128,7 +111,7 @@ npm run dev
 ```
 *The API will start listening on `http://localhost:5000`.*
 
-#### 3. Start the React Frontend Console
+#### 2. Start the React Frontend Console
 ```bash
 cd frontend
 npm install
